@@ -1,23 +1,21 @@
 import React, {useState, useRef} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { addMedicine, editMedicine } from '../../store/actions';
+import { addMedicine, editMedicine, setMedicineModalIsVisible, setAlertIsVisible } from '../../store/actions';
 
 import Alert from '../Alert';
 
 const MedicinePopup = () => {
+  
   const dispatch = useDispatch();
 
   const medicines = useSelector(state => state.medicines);
   const modalFormStore = useSelector(state => state.medicineModalForm);
   
+  const modalIsVisible = modalFormStore.isVisible;
   const modalFormMethod = modalFormStore.method;
   const currentMedicineIndex = modalFormStore.currentMedicineIndex;
   const currentMedicine = medicines[currentMedicineIndex];
-
-  // Create refs for modal --------------------------------------------------
-  window.popupRef = useRef();
-  const alertRef = useRef();
 
   // Create local state for modal --------------------------------------------------
   const [formDataState, setFormDataState] = useState({
@@ -177,7 +175,8 @@ const MedicinePopup = () => {
   }
 
   const closePopup = () => {
-    window.popupRef.current.style.display = 'none';
+    dispatch(setMedicineModalIsVisible(false));
+    dispatch(setAlertIsVisible(false));
     setAlertErrorList([]);
     setStep(1);
   }
@@ -185,14 +184,16 @@ const MedicinePopup = () => {
   const goToNextStep = () => {
     const errorMessage = validateForm(formDataState);
     if (errorMessage.length === 0) {
+      dispatch(setAlertIsVisible(false));
       setStep(2);
     } else {
-      alertRef.current.style.display = 'block';
+      dispatch(setAlertIsVisible(true));
     }
     
   }
 
   const goToPrevStep = () => {
+    dispatch(setAlertIsVisible(false));
     setStep(1);
   }
 
@@ -207,10 +208,11 @@ const MedicinePopup = () => {
 
     if (errorMessage.length === 0) {
       dispatch(editMedicine(formDataState, currentMedicineIndex));
+      dispatch(setMedicineModalIsVisible(false));
+      dispatch(setAlertIsVisible(false));
       setStep(1);
-      window.popupRef.current.style.display = 'none';
     } else {
-      alertRef.current.style.display = 'block';
+      dispatch(setAlertIsVisible(true));
     }
     
   }
@@ -225,66 +227,72 @@ const MedicinePopup = () => {
     const errorMessage = validateForm(formDataState);
     if (errorMessage.length === 0) {
       dispatch(addMedicine(formDataState));
+      dispatch(setMedicineModalIsVisible(false));
+      dispatch(setAlertIsVisible(false));
       setStep(1);
-      window.popupRef.current.style.display = 'none';
     } else {
-      alertRef.current.style.display = 'block';
+      dispatch(setAlertIsVisible(true));
     }
     
   }
 
-  return (
-    <div ref={window.popupRef}>
-      <form onSubmit={(e) => {e.preventDefault()}}>
-        <h2>
-          {modalFormMethod === 'EDIT' ? 'Edit' : 'Add'} medicine {step}/2
-        </h2>
-        <div>
-          {step === 1 ?
-            (<div>
-              <label>
-                Code: <input type="text" name="code" value={formDataState.code} onChange={onChangeHandler} />
-              </label>
-              <label>
-                Name: <input type="text" name="name" value={formDataState.name} onChange={onChangeHandler} />
-              </label>
-              <label>
-                Price: <input type="number" name="price" value={formDataState.price} onChange={onChangeHandler} />
-              </label>
-              <label>
-                Expiration date: <input type="number" name="shelfLife" value={formDataState.shelfLife} onChange={onChangeHandler} />
-              </label>
-            </div>)
-            :
-            (<div>
-              <label>
-                Composition and releases form: <input type="text" name="compositionAndFormOfRelease" value={formDataState.compositionAndFormOfRelease} onChange={onChangeHandler} />
-              </label>
-              <label>
-                Indication: <input type="text" name="indication" value={formDataState.indication} onChange={onChangeHandler} />
-              </label>
-              <label>
-                Contrindicator: <input type="text" name="сontraindications" value={formDataState.сontraindications} onChange={onChangeHandler} />
-              </label>
-              
-              
-            </div>)
-          }
-        </div>
-        <div>
-          <button onClick={closePopup}>Cancel</button>
-          {step === 1 ?
-            (<button onClick={goToNextStep}>Next</button>)
-            :
-            (<button onClick={goToPrevStep}>Prev</button>)
-          }
-          {step > 1 && modalFormMethod === 'EDIT' ? (<button onClick={editCurrentMedicine}>Edit</button>) : ''}
-          {step > 1 && modalFormMethod === 'CREATE' ? (<button id="createBtn" onClick={createNewMedicine}>Create</button>) : ''}
-        </div>
-      </form>
-      <Alert alertRef={alertRef} errorList={alertErrorList} type="error" />
-    </div>
-  );
+  if (modalIsVisible === true) {
+    return (
+      <div id="ModalForm">
+        <form onSubmit={(e) => {e.preventDefault()}}>
+          <h2>
+            {modalFormMethod === 'EDIT' ? 'Edit' : 'Add'} medicine {step}/2
+          </h2>
+          <div>
+            {step === 1 ?
+              (<div>
+                <label>
+                  Code: <input type="text" name="code" value={formDataState.code} onChange={onChangeHandler} />
+                </label>
+                <label>
+                  Name: <input type="text" name="name" value={formDataState.name} onChange={onChangeHandler} />
+                </label>
+                <label>
+                  Price: <input type="number" name="price" value={formDataState.price} onChange={onChangeHandler} />
+                </label>
+                <label>
+                  Expiration date: <input type="number" name="shelfLife" value={formDataState.shelfLife} onChange={onChangeHandler} />
+                </label>
+              </div>)
+              :
+              (<div>
+                <label>
+                  Composition and releases form: <input type="text" name="compositionAndFormOfRelease" value={formDataState.compositionAndFormOfRelease} onChange={onChangeHandler} />
+                </label>
+                <label>
+                  Indication: <input type="text" name="indication" value={formDataState.indication} onChange={onChangeHandler} />
+                </label>
+                <label>
+                  Contrindicator: <input type="text" name="сontraindications" value={formDataState.сontraindications} onChange={onChangeHandler} />
+                </label>
+                
+                
+              </div>)
+            }
+          </div>
+          <div>
+            <button onClick={closePopup}>Cancel</button>
+            {step === 1 ?
+              (<button onClick={goToNextStep}>Next</button>)
+              :
+              (<button onClick={goToPrevStep}>Prev</button>)
+            }
+            {step > 1 && modalFormMethod === 'EDIT' ? (<button onClick={editCurrentMedicine}>Edit</button>) : ''}
+            {step > 1 && modalFormMethod === 'CREATE' ? (<button onClick={createNewMedicine}>Create</button>) : ''}
+          </div>
+        </form>
+        <Alert errorList={alertErrorList} type="error" />
+      </div>
+    );
+  } else {
+    return '';
+  }
+  
 }
 
 export default MedicinePopup;

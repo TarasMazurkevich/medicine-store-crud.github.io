@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { deleteMedicine, setMedicineModalMethod, setCurrentMedicineIndex } from '../../store/actions';
+import { deleteMedicine, setMedicineModalIsVisible, setMedicineModalMethod, setCurrentMedicineIndex } from '../../store/actions';
 
 import MedicineItem from '../MedicineItem';
 
@@ -14,10 +14,10 @@ const MedicineList = () => {
     dispatch(setCurrentMedicineIndex(currentMedicineIndex));
 
     window.setFormDataState(medicines[currentMedicineIndex]);
-    window.popupRef.current.style.display = 'block';
+    dispatch(setMedicineModalIsVisible(true));
   }
 
-  const deleteMedicine = (currentMedicineIndex) => {
+  const deleteMedicineHandler = (currentMedicineIndex) => {
     dispatch(deleteMedicine(currentMedicineIndex));
   }
 
@@ -28,7 +28,7 @@ const MedicineList = () => {
           key={i}
           {...medicine}
           openEditModal={() => openEditModal('EDIT', i)}
-          deleteMedicine={() => deleteMedicine(i)}
+          deleteMedicine={() => deleteMedicineHandler(i)}
         />
       )}
     </ul>

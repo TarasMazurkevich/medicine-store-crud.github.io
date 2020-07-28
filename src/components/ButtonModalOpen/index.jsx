@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { setMedicineModalMethod } from '../../store/actions';
+import { setMedicineModalIsVisible, setMedicineModalMethod } from '../../store/actions';
 
 const ButtonModalOpen = () => {
   const dispatch = useDispatch();
@@ -8,7 +8,7 @@ const ButtonModalOpen = () => {
   const openCreatModal = (e) => {
     e.preventDefault();
     
-    dispatch(setMedicineModalMethod('CREATE_MEDICINE'));
+    dispatch(setMedicineModalMethod('CREATE'));
     window.setFormDataState({
       code: '',
       name: '',
@@ -18,7 +18,7 @@ const ButtonModalOpen = () => {
       indication: '',
       сontraindications: ''
     });
-    window.popupRef.current.style.display = 'block';
+    dispatch(setMedicineModalIsVisible(true));
   }
 
   return (

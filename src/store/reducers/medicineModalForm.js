@@ -1,9 +1,14 @@
-import { SET_MEDICINE_MODAL_METHOD, SET_CURRENT_MEDICINE_INDEX } from '../actions';
+import { SET_MEDICINE_MODAL_VISIBLE, SET_MEDICINE_MODAL_METHOD, SET_CURRENT_MEDICINE_INDEX } from '../actions';
 
 import { ModalTypeMethods } from '../actions';
 
-const medicineModalForm = (state = {method: ModalTypeMethods.CREATE, currentMedicineIndex: -1}, action) => {
+const medicineModalForm = (state = {isVisible: false, method: ModalTypeMethods.CREATE, currentMedicineIndex: -1}, action) => {
   switch (action.type) {
+    case SET_MEDICINE_MODAL_VISIBLE:
+      return {
+        ...state,
+        isVisible: action.isVisible
+      }
     case SET_MEDICINE_MODAL_METHOD:
       return {
         ...state,

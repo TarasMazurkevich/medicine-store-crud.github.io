@@ -26,8 +26,9 @@ export const deleteMedicine = index => ({
   index
 });
 
-// Action for MEDICINE POPUP
+// Action for MEDICINE MODAL
 // ---------------------------------------------
+export const SET_MEDICINE_MODAL_VISIBLE = 'SET_MEDICINE_MODAL_VISIBLE';
 export const SET_MEDICINE_MODAL_METHOD = 'SET_MEDICINE_MODAL_METHOD';
 export const SET_CURRENT_MEDICINE_INDEX = 'SET_CURRENT_MEDICINE_INDEX';
 
@@ -35,6 +36,11 @@ export const ModalTypeMethods = {
   CREATE: 'CREATE',
   EDIT: 'EDIT'
 }
+
+export const setMedicineModalIsVisible = isVisible => ({
+  type: SET_MEDICINE_MODAL_VISIBLE,
+  isVisible
+});
 
 export const setMedicineModalMethod = method => ({
   type: SET_MEDICINE_MODAL_METHOD,
@@ -44,4 +50,13 @@ export const setMedicineModalMethod = method => ({
 export const setCurrentMedicineIndex = currentMedicineIndex => ({
   type: SET_CURRENT_MEDICINE_INDEX,
   currentMedicineIndex
+});
+
+// Action for ALERT
+// ---------------------------------------------
+export const SET_ALERT_VISIBLE = 'SET_ALERT_VISIBLE';
+
+export const setAlertIsVisible = isVisible => ({
+  type: SET_ALERT_VISIBLE,
+  isVisible
 });
