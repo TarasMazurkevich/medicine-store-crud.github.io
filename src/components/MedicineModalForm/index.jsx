@@ -1,12 +1,16 @@
 import React, {useState, useRef} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+import firebase, { myFirestoreCollection } from '../../firebase';
+import 'firebase/firestore';
+
 import { addMedicine, editMedicine, setMedicineModalIsVisible, setAlertIsVisible } from '../../store/actions';
+import { SET_MEDICINES } from '../../store/actions';
 
 import Alert from '../Alert';
 
 const MedicinePopup = () => {
-  
+
   const dispatch = useDispatch();
 
   const medicines = useSelector(state => state.medicines);
@@ -136,13 +140,23 @@ const MedicinePopup = () => {
 
   // --------------------------------------
   
-  /**
-   * [description]
-   * @param  {object} formData - 
-   * @return {array}          - Error info for user
-   */
+  const resetModalState = () => {
+    dispatch(setMedicineModalIsVisible(false));
+    dispatch(setAlertIsVisible(false));
+    setAlertErrorList([]);
+    setStep(1);
+    setFormDataState({
+      code: '',
+      name: '',
+      price: 0,
+      shelfLife: 0,
+      compositionAndFormOfRelease: '',
+      indication: '',
+      сontraindications: ''
+    });
+  }
+  
   const validateForm = (formData) => {
-
     let validate = step === 1 ? validationRules.firstStep : validationRules.secondStep;
     let errorMessage = [];
     
@@ -156,13 +170,8 @@ const MedicinePopup = () => {
 
     setAlertErrorList(errorMessage);
     return errorMessage;
-
   }
-
-  /**
-   * onChange event for imput (take input.value and save it to state)
-   * @param  {object} e - event object
-   */
+  
   const onChangeHandler = (e) => {
     const input = e.target;
     const inputName = input.name;
@@ -174,11 +183,8 @@ const MedicinePopup = () => {
     });
   }
 
-  const closePopup = () => {
-    dispatch(setMedicineModalIsVisible(false));
-    dispatch(setAlertIsVisible(false));
-    setAlertErrorList([]);
-    setStep(1);
+  const closeModal = () => {
+    resetModalState();
   }
 
   const goToNextStep = () => {
@@ -189,51 +195,47 @@ const MedicinePopup = () => {
     } else {
       dispatch(setAlertIsVisible(true));
     }
-    
   }
 
   const goToPrevStep = () => {
     dispatch(setAlertIsVisible(false));
     setStep(1);
   }
-
-  /**
-   * Take data from state and edit current medicine
-   * @param  {object} e - event object
-   */
+  
   const editCurrentMedicine = (e) => {
     e.preventDefault();
 
     const errorMessage = validateForm(formDataState);
 
     if (errorMessage.length === 0) {
-      dispatch(editMedicine(formDataState, currentMedicineIndex));
-      dispatch(setMedicineModalIsVisible(false));
-      dispatch(setAlertIsVisible(false));
-      setStep(1);
+      firebase
+        .firestore()
+        .collection(myFirestoreCollection)
+        .doc(medicines[currentMedicineIndex].id)
+        .update(formDataState)
+        .then(() => {
+          resetModalState();
+        });
     } else {
       dispatch(setAlertIsVisible(true));
     }
-    
   }
 
-  /**
-   * Take data from state and create new medicine
-   * @param  {object} e - event object
-   */
   const createNewMedicine = (e) => {
     e.preventDefault();
 
     const errorMessage = validateForm(formDataState);
     if (errorMessage.length === 0) {
-      dispatch(addMedicine(formDataState));
-      dispatch(setMedicineModalIsVisible(false));
-      dispatch(setAlertIsVisible(false));
-      setStep(1);
+      firebase
+        .firestore()
+        .collection(myFirestoreCollection)
+        .add(formDataState)
+        .then(() => {
+          resetModalState();
+        });
     } else {
       dispatch(setAlertIsVisible(true));
     }
-    
   }
 
   if (modalIsVisible === true) {
@@ -253,7 +255,7 @@ const MedicinePopup = () => {
                   Name: <input type="text" name="name" value={formDataState.name} onChange={onChangeHandler} />
                 </label>
                 <label>
-                  Price: <input type="number" name="price" value={formDataState.price} onChange={onChangeHandler} />
+                  Price: <input type="number" step="0.01" name="price" value={formDataState.price} onChange={onChangeHandler} />
                 </label>
                 <label>
                   Expiration date: <input type="number" name="shelfLife" value={formDataState.shelfLife} onChange={onChangeHandler} />
@@ -276,7 +278,7 @@ const MedicinePopup = () => {
             }
           </div>
           <div>
-            <button onClick={closePopup}>Cancel</button>
+            <button onClick={closeModal}>Cancel</button>
             {step === 1 ?
               (<button onClick={goToNextStep}>Next</button>)
               :

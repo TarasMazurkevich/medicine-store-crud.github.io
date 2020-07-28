@@ -1,7 +1,11 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+import firebase, { myFirestoreCollection } from '../../firebase';
+import 'firebase/firestore';
+
 import { deleteMedicine, setMedicineModalIsVisible, setMedicineModalMethod, setCurrentMedicineIndex } from '../../store/actions';
+import { SET_MEDICINES } from '../../store/actions';
 
 import MedicineItem from '../MedicineItem';
 
@@ -17,8 +21,12 @@ const MedicineList = () => {
     dispatch(setMedicineModalIsVisible(true));
   }
 
-  const deleteMedicineHandler = (currentMedicineIndex) => {
-    dispatch(deleteMedicine(currentMedicineIndex));
+  const deleteMedicineHandler = (medicine, currentMedicineIndex) => {
+    firebase
+      .firestore()
+      .collection(myFirestoreCollection)
+      .doc(medicine.id)
+      .delete()
   }
 
   return (
@@ -28,7 +36,7 @@ const MedicineList = () => {
           key={i}
           {...medicine}
           openEditModal={() => openEditModal('EDIT', i)}
-          deleteMedicine={() => deleteMedicineHandler(i)}
+          deleteMedicine={() => deleteMedicineHandler(medicine, i)}
         />
       )}
     </ul>

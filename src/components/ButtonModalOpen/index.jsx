@@ -9,15 +9,6 @@ const ButtonModalOpen = () => {
     e.preventDefault();
     
     dispatch(setMedicineModalMethod('CREATE'));
-    window.setFormDataState({
-      code: '',
-      name: '',
-      price: 0,
-      shelfLife: 0,
-      compositionAndFormOfRelease: '',
-      indication: '',
-      сontraindications: ''
-    });
     dispatch(setMedicineModalIsVisible(true));
   }
 
