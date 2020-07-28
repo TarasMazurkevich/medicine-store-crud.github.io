@@ -1,12 +1,14 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-const Alert = ({ type, errorList }) => {
-  const isVisible = useSelector(state => state.alert.isVisible);
+import './alertModal.scss';
+
+const AlertModal = ({ type, errorList }) => {
+  const isVisible = useSelector(state => state.alert.isVisible); 
 
   if (isVisible) {
     return (
-      <div id="Alert">
+      <div>
         {errorList.map((error, i) => 
           <p key={i}>{error}</p>
         )}
@@ -18,4 +20,4 @@ const Alert = ({ type, errorList }) => {
   
 }
 
-export default Alert;
+export default AlertModal;

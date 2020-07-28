@@ -1,13 +1,17 @@
 import React, {useState, useRef} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { ButtonGroup, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Form, FormGroup, Label, Input, Alert } from 'reactstrap';
+import { Row, Col, Container } from "reactstrap";
+
 import firebase, { myFirestoreCollection } from '../../firebase';
 import 'firebase/firestore';
 
 import { addMedicine, editMedicine, setMedicineModalIsVisible, setAlertIsVisible } from '../../store/actions';
 import { SET_MEDICINES } from '../../store/actions';
 
-import Alert from '../Alert';
+import AlertModal from '../AlertModal';
 
 const MedicinePopup = () => {
 
@@ -72,7 +76,7 @@ const MedicinePopup = () => {
         if (!+value || +value < 0.01 || +value > 1000000 || typeof +value !== 'number') {
           return {
             result: false,
-            error: 'Price: число должно быть дленной от 5 до 100 символов'
+            error: 'Price: число должно быть длиной от 0.01 до 1000000 символов'
           }
         } else {
           return {
@@ -85,7 +89,7 @@ const MedicinePopup = () => {
         if (!+value || +value.length < 1 || +value.length > 1000 || typeof +value !== 'number') {
           return {
             result: false,
-            error: 'Expiration date: число должно быть дленной от 1 до 1000 символов'
+            error: 'Expiration date: число должно быть длиной от 1 до 1000 символов'
           }
         } else {
           return {
@@ -100,7 +104,7 @@ const MedicinePopup = () => {
         if (value.length > 2000) {
           return {
             result: false,
-            error: 'Composition and releases form: строка должна быть дленной до 2000 символов'
+            error: 'Composition and releases form: строка должна быть длиной до 2000 символов'
           }
         } else {
           return {
@@ -113,7 +117,7 @@ const MedicinePopup = () => {
         if (value.length > 2000) {
           return {
             result: false,
-            error: 'Indication: строка должна быть дленной до 2000 символов'
+            error: 'Indication: строка должна быть длиной до 2000 символов'
           }
         } else {
           return {
@@ -126,7 +130,7 @@ const MedicinePopup = () => {
         if (value.length > 2000) {
           return {
             result: false,
-            error: 'Contrindicator: строка должна быть дленной до 2000 символов'
+            error: 'Contrindicator: строка должна быть длиной до 2000 символов'
           }
         } else {
           return {
@@ -240,56 +244,76 @@ const MedicinePopup = () => {
 
   if (modalIsVisible === true) {
     return (
-      <div id="ModalForm">
-        <form onSubmit={(e) => {e.preventDefault()}}>
-          <h2>
-            {modalFormMethod === 'EDIT' ? 'Edit' : 'Add'} medicine {step}/2
-          </h2>
-          <div>
-            {step === 1 ?
-              (<div>
-                <label>
-                  Code: <input type="text" name="code" value={formDataState.code} onChange={onChangeHandler} />
-                </label>
-                <label>
-                  Name: <input type="text" name="name" value={formDataState.name} onChange={onChangeHandler} />
-                </label>
-                <label>
-                  Price: <input type="number" step="0.01" name="price" value={formDataState.price} onChange={onChangeHandler} />
-                </label>
-                <label>
-                  Expiration date: <input type="number" name="shelfLife" value={formDataState.shelfLife} onChange={onChangeHandler} />
-                </label>
-              </div>)
-              :
-              (<div>
-                <label>
-                  Composition and releases form: <input type="text" name="compositionAndFormOfRelease" value={formDataState.compositionAndFormOfRelease} onChange={onChangeHandler} />
-                </label>
-                <label>
-                  Indication: <input type="text" name="indication" value={formDataState.indication} onChange={onChangeHandler} />
-                </label>
-                <label>
-                  Contrindicator: <input type="text" name="сontraindications" value={formDataState.сontraindications} onChange={onChangeHandler} />
-                </label>
-                
-                
-              </div>)
-            }
-          </div>
-          <div>
-            <button onClick={closeModal}>Cancel</button>
-            {step === 1 ?
-              (<button onClick={goToNextStep}>Next</button>)
-              :
-              (<button onClick={goToPrevStep}>Prev</button>)
-            }
-            {step > 1 && modalFormMethod === 'EDIT' ? (<button onClick={editCurrentMedicine}>Edit</button>) : ''}
-            {step > 1 && modalFormMethod === 'CREATE' ? (<button onClick={createNewMedicine}>Create</button>) : ''}
-          </div>
-        </form>
-        <Alert errorList={alertErrorList} type="error" />
-      </div>
+      <Modal isOpen={modalIsVisible} toggle={closeModal}>
+        <Container>
+          <Row>
+            <Col>
+              <ModalHeader>{modalFormMethod === 'EDIT' ? 'Edit' : 'Add'} medicine {step}/2</ModalHeader>
+                <ModalBody>
+                  <Form>
+                    {step === 1 ?
+                      (<div>
+                        <FormGroup>
+                          <Label>
+                            Code: <Input type="text" name="code" value={formDataState.code} onChange={onChangeHandler} />
+                          </Label>
+                        </FormGroup>
+                        <FormGroup>
+                          <Label>
+                            Name: <Input type="text" name="name" value={formDataState.name} onChange={onChangeHandler} />
+                          </Label>
+                        </FormGroup>
+                        <FormGroup>
+                          <Label>
+                            Price: <Input type="number" step="0.01" name="price" value={formDataState.price} onChange={onChangeHandler} />
+                          </Label>
+                        </FormGroup>
+                        <FormGroup>
+                          <Label>
+                            Expiration date: <Input type="number" name="shelfLife" value={formDataState.shelfLife} onChange={onChangeHandler} />
+                          </Label>
+                        </FormGroup>
+                      </div>)
+                      :
+                      (<div>
+                        <FormGroup>
+                          <Label>
+                            Composition and releases form: <Input type="textarea" name="compositionAndFormOfRelease" value={formDataState.compositionAndFormOfRelease} onChange={onChangeHandler} />
+                          </Label>
+                        </FormGroup>
+                        <FormGroup>
+                          <Label>
+                            Indication: <Input type="textarea" name="indication" value={formDataState.indication} onChange={onChangeHandler} />
+                          </Label>
+                        </FormGroup>
+                        <FormGroup>
+                          <Label>
+                            Contrindicator: <Input type="textarea" name="сontraindications" value={formDataState.сontraindications} onChange={onChangeHandler} />
+                          </Label>
+                        </FormGroup>
+                      </div>)
+                    }
+                  </Form>
+                </ModalBody>
+                <ModalFooter>
+                  <ButtonGroup>
+                    <Button color="danger" onClick={closeModal}>Cancel</Button>
+                    {step === 1 ?
+                      (<Button color="primary" onClick={goToNextStep}>Next</Button>)
+                      :
+                      (<Button color="primary" onClick={goToPrevStep}>Prev</Button>)
+                    }
+                    {step > 1 && modalFormMethod === 'EDIT' ? (<Button color="primary" onClick={editCurrentMedicine}>Edit</Button>) : ''}
+                    {step > 1 && modalFormMethod === 'CREATE' ? (<Button color="primary" onClick={createNewMedicine}>Create</Button>) : ''}
+                  </ButtonGroup>
+                </ModalFooter>
+                <Alert color="danger">
+                  <AlertModal errorList={alertErrorList} type="error" />
+                </Alert>
+            </Col>
+          </Row>
+        </Container>
+      </Modal>
     );
   } else {
     return '';

@@ -1,5 +1,8 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+
+import { Button, ButtonGroup } from 'reactstrap';
+
 import { setMedicineModalIsVisible, setMedicineModalMethod } from '../../store/actions';
 
 const ButtonModalOpen = () => {
@@ -13,7 +16,9 @@ const ButtonModalOpen = () => {
   }
 
   return (
-    <button onClick={openCreatModal}>Add</button>
+    <ButtonGroup>
+      <Button color="primary" onClick={openCreatModal}>Add</Button>
+    </ButtonGroup>
   );
 }
 

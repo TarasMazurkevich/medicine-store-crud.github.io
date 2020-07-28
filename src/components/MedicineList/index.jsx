@@ -1,6 +1,8 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { Table } from 'reactstrap';
+
 import firebase, { myFirestoreCollection } from '../../firebase';
 import 'firebase/firestore';
 
@@ -30,16 +32,28 @@ const MedicineList = () => {
   }
 
   return (
-    <ul>
-      {medicines.map((medicine, i) =>
-        <MedicineItem
-          key={i}
-          {...medicine}
-          openEditModal={() => openEditModal('EDIT', i)}
-          deleteMedicine={() => deleteMedicineHandler(medicine, i)}
-        />
-      )}
-    </ul>
+    <Table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Code</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {medicines.map((medicine, i) =>
+          <MedicineItem
+            key={i}
+            {...medicine}
+            medicineNumber={i + 1}
+            openEditModal={() => openEditModal('EDIT', i)}
+            deleteMedicine={() => deleteMedicineHandler(medicine, i)}
+          />
+        )}
+      </tbody>
+    </Table>
   );
 }
 
