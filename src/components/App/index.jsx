@@ -1,8 +1,13 @@
 import React from 'react';
+import MedicineList from '../MedicineList';
+import MedicineModalForm from '../MedicineModalForm';
+import ButtonModalOpen from '../ButtonModalOpen';
 
 const App = () => (
   <main>
-    Medicine store crud - react/redux/firebase/firestore
+    <MedicineList />
+    <ButtonModalOpen />
+    <MedicineModalForm />
   </main>
 );
 

@@ -28,16 +28,16 @@ export const deleteMedicine = index => ({
 
 // Action for MEDICINE POPUP
 // ---------------------------------------------
-export const SET_MEDICINE_POPUP_METHOD = 'SET_MEDICINE_POPUP_METHOD';
+export const SET_MEDICINE_MODAL_METHOD = 'SET_MEDICINE_MODAL_METHOD';
 export const SET_CURRENT_MEDICINE_INDEX = 'SET_CURRENT_MEDICINE_INDEX';
 
-export const PopupTypeMethods = {
+export const ModalTypeMethods = {
   CREATE: 'CREATE',
   EDIT: 'EDIT'
 }
 
-export const setMedicinePopupMethod = method => ({
-  type: SET_MEDICINE_POPUP_METHOD,
+export const setMedicineModalMethod = method => ({
+  type: SET_MEDICINE_MODAL_METHOD,
   method
 });
 

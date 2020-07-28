@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
 
 import medicines from './medicines';
-import medicinePopup from './medicinePopup';
+import medicineModalForm from './medicineModalForm';
 
 export default combineReducers({
   medicines,
-  medicinePopup
+  medicineModalForm
 });
